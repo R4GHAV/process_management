@@ -15,7 +15,7 @@ const BootstrapTable = () => {
 
   const fetchRawMaterials = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/raw-materials');
+      const response = await axios.get('https://project-management-backend-u9mm.onrender.com/api/raw-materials');
       setRawMaterials(response.data);
     } catch (error) {
       console.error('Error fetching raw materials:', error);
@@ -25,7 +25,7 @@ const BootstrapTable = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:4000/api/raw-material', newMaterial);
+      await axios.post('https://project-management-backend-u9mm.onrender.com/api/raw-material', newMaterial);
       fetchRawMaterials();
       setNewMaterial({ Item_ID: '', Item_Name: '', Item_Group: '', quantity: '', UoM: '' });
       setIsBasic(false);

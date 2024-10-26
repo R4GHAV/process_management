@@ -29,7 +29,7 @@ const ProcessTable = () => {
   // Fetch products and raw materials from the server
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/products');
+      const response = await axios.get('https://project-management-backend-u9mm.onrender.com/api/products');
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -38,7 +38,7 @@ const ProcessTable = () => {
 
   const fetchRawMaterials = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/raw-materials');
+      const response = await axios.get('https://project-management-backend-u9mm.onrender.com/api/raw-materials');
       setRawMaterials(response.data);
     } catch (error) {
       console.error('Error fetching raw materials:', error);
@@ -76,7 +76,7 @@ const ProcessTable = () => {
       };
       newProduct.processes = productData.processes;
       newProduct.processes.shift();
-      await axios.post('http://localhost:4000/api/products', newProduct);
+      await axios.post('https://project-management-backend-u9mm.onrender.com/api/products', newProduct);
       fetchProducts();
       setNewProduct({
         SKU_ID: '',

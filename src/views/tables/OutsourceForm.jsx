@@ -21,7 +21,7 @@ const OutsourceForm = () => {
 
   useEffect(() => {
     // Fetch items (SKUs) on component mount
-    axios.get('http://localhost:4000/api/products').then((response) => {
+    axios.get('https://project-management-backend-u9mm.onrender.com/api/products').then((response) => {
       setItems(response.data);
     });
   }, []);
@@ -55,7 +55,7 @@ const OutsourceForm = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:4000/api/outsource')
+      .get('https://project-management-backend-u9mm.onrender.com/api/outsource')
       .then((response) => {
         setOutsourceEntries(response.data);
       })
@@ -68,7 +68,7 @@ const OutsourceForm = () => {
     e.preventDefault();
     outsourceData.issue_material = outsourceData.issue_material.length === 0 ? undefined : outsourceData.issue_material;
     axios
-      .post('http://localhost:4000/api/outsource', outsourceData)
+      .post('https://project-management-backend-u9mm.onrender.com/api/outsource', outsourceData)
       .then((response) => {
         console.log(response);
         alert('Outsource entry created successfully');

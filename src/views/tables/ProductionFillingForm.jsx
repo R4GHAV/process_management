@@ -29,7 +29,7 @@ const ProductionFillingForm = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:4000/api/products') // Adjust endpoint as necessary
+      .get('https://project-management-backend-u9mm.onrender.com/api/products') // Adjust endpoint as necessary
       .then((response) => {
         setProducts(response.data);
       })
@@ -85,7 +85,7 @@ const ProductionFillingForm = () => {
       formData.scrap_yield = 0;
     }
     axios
-      .post('http://localhost:4000/api/production', formData) // Adjust endpoint as necessary
+      .post('https://project-management-backend-u9mm.onrender.com/api/production', formData) // Adjust endpoint as necessary
       .then((response) => {
         console.log('Production entry submitted', response.data);
         // Optionally clear the form or show success message

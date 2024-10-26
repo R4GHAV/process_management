@@ -18,16 +18,16 @@ const RecdFromOutsourceForm = () => {
 
   useEffect(() => {
     // Fetch existing entries (GET call)
-    axios.get('http://localhost:4000/api/recd_from_outsource').then((response) => {
+    axios.get('https://project-management-backend-u9mm.onrender.com/api/recd_from_outsource').then((response) => {
       setEntries(response.data);
     });
 
-    axios.get('http://localhost:4000/api/processes').then((response) => {
+    axios.get('https://project-management-backend-u9mm.onrender.com/api/processes').then((response) => {
       setAllProcesses(response.data);
     });
 
     axios
-      .get('http://localhost:4000/api/outsource')
+      .get('https://project-management-backend-u9mm.onrender.com/api/outsource')
       .then((response) => {
         const uniqueVendors = Array.from(new Set(response.data.map((item) => item.vendor_name)));
         setOutsourceData(response.data);
@@ -99,7 +99,7 @@ const RecdFromOutsourceForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:4000/api/recd_from_outsource', formData);
+      await axios.post('https://project-management-backend-u9mm.onrender.com/api/recd_from_outsource', formData);
       alert('Entry submitted successfully');
       setFormData({
         mrr: '',
