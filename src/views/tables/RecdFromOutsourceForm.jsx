@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Row, Col, Card, Form, Button, Table } from 'react-bootstrap';
+import MultiSelectDropdown from '../extra/MultiSelectDropdown';
 
 const RecdFromOutsourceForm = () => {
   const [formData, setFormData] = useState({
@@ -8,12 +9,12 @@ const RecdFromOutsourceForm = () => {
     vendor_name: '',
     items_detail: []
   });
-
   const [challans, setChallans] = useState([]);
   const [outsourceData, setOutsourceData] = useState([]);
+  const [allProcesses, setAllProcesses] = useState([]);
   const [vendors, setVendors] = useState([]);
-  //   const [venhallans, setVendorChallans] = useState([]);
   const [entries, setEntries] = useState([]);
+  const [processOptions, setProcessOptions] = useState([]);
 
   useEffect(() => {
     // Fetch existing entries (GET call)
@@ -21,7 +22,10 @@ const RecdFromOutsourceForm = () => {
       setEntries(response.data);
     });
 
-    // Fetch vendors (if you have a vendor endpoint)
+    axios.get('http://localhost:4000/api/processes').then((response) => {
+      setAllProcesses(response.data);
+    });
+
     axios
       .get('http://localhost:4000/api/outsource')
       .then((response) => {
@@ -34,6 +38,10 @@ const RecdFromOutsourceForm = () => {
         console.error('Error fetching vendors:', error);
       });
   }, []);
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   const handleVendorChange = async (e) => {
     const vendorName = e.target.value;
@@ -49,7 +57,7 @@ const RecdFromOutsourceForm = () => {
   const handleAddChallan = () => {
     setFormData({
       ...formData,
-      items_detail: [...formData.items_detail, { challan_no: '', items: '', work_done: [], unprocessed: 0 }]
+      items_detail: [...formData.items_detail, { challan_no: '', work_done: [], unprocessed: 0 }]
     });
   };
 
@@ -65,6 +73,26 @@ const RecdFromOutsourceForm = () => {
   const handleChallanChange = (index, field, value) => {
     const updatedItemsDetail = [...formData.items_detail];
     updatedItemsDetail[index][field] = value;
+
+    const selectedChallan = challans.find((challan) => {
+      return challan.challan_no === parseInt(value);
+    });
+    if (selectedChallan) {
+      const relevantProcesses = allProcesses.filter((process) => {
+        return selectedChallan.processing_stage.includes(process._id);
+      });
+      console.log(relevantProcesses);
+      setProcessOptions(relevantProcesses);
+    }
+    setFormData({ ...formData, items_detail: updatedItemsDetail });
+  };
+
+  const handleAddWork = (index) => {
+    const updatedItemsDetail = [...formData.items_detail];
+    updatedItemsDetail[index].work_done.push({
+      item_processed: '',
+      selectedProcesses: [] // Add a unique selected process array for each work
+    });
     setFormData({ ...formData, items_detail: updatedItemsDetail });
   };
 
@@ -81,6 +109,13 @@ const RecdFromOutsourceForm = () => {
     } catch (error) {
       console.error('Error submitting form:', error);
     }
+  };
+
+  const handleProcessChange = (index, workIndex, selectedOptions) => {
+    // setSelectedProcesses(selected);
+    const updatedItemsDetail = [...formData.items_detail];
+    updatedItemsDetail[index].work_done[workIndex].selectedProcesses = selectedOptions;
+    setFormData({ ...formData, items_detail: updatedItemsDetail });
   };
 
   return (
@@ -124,6 +159,7 @@ const RecdFromOutsourceForm = () => {
                       onChange={(e) => handleChallanChange(index, 'challan_no', e.target.value)}
                       required
                     >
+                      <option>Select a Challan</option>
                       {challans.map((challan, index) => (
                         <option key={index} value={challan.challan_no}>
                           {challan.challan_no}
@@ -132,19 +168,9 @@ const RecdFromOutsourceForm = () => {
                     </Form.Control>
                   </Form.Group>
 
-                  {itemDetail.work_done.map((work, workIndex) => (
+                  {/* {itemDetail.work_done.map((work, workIndex) => (
                     <div key={workIndex} className="border p-1 my-1">
-                      <Form.Group controlId={`process_${index}_${workIndex}`}>
-                        <Form.Label>Process</Form.Label>
-                        <Form.Control
-                          type="text"
-                          value={work.process}
-                          onChange={(e) => handleWorkDoneChange(index, workIndex, 'process', e.target.value)}
-                          required
-                        />
-                      </Form.Group>
-
-                      <Form.Group controlId={`item_processed_${index}_${workIndex}`}>
+                      <Form.Group className="mb-2" controlId={`item_processed_${index}_${workIndex}`}>
                         <Form.Label>Items Processed</Form.Label>
                         <Form.Control
                           type="number"
@@ -153,14 +179,36 @@ const RecdFromOutsourceForm = () => {
                           required
                         />
                       </Form.Group>
+                      <MultiSelectDropdown
+                        options={processOptions}
+                        selectedOptions={selectedProcesses}
+                        onChange={handleProcessChange}
+                        title="Select Processes"
+                      />
+                    </div>
+                  ))} */}
+
+                  {itemDetail.work_done.map((work, workIndex) => (
+                    <div key={workIndex} className="border p-1 my-1">
+                      <Form.Group className="mb-2" controlId={`item_processed_${index}_${workIndex}`}>
+                        <Form.Label>Items Processed</Form.Label>
+                        <Form.Control
+                          type="number"
+                          value={work.item_processed}
+                          onChange={(e) => handleWorkDoneChange(index, workIndex, 'item_processed', e.target.value)}
+                          required
+                        />
+                      </Form.Group>
+                      <MultiSelectDropdown
+                        options={processOptions}
+                        selectedOptions={work.selectedProcesses}
+                        onChange={(selectedOptions) => handleProcessChange(index, workIndex, selectedOptions)}
+                        title="Select Processes"
+                      />
                     </div>
                   ))}
 
-                  <Button
-                    variant="secondary"
-                    className="mt-3"
-                    onClick={() => handleWorkDoneChange(index, itemDetail.work_done.length, 'unprocessed', 0)}
-                  >
+                  <Button variant="secondary" className="mt-3" onClick={() => handleAddWork(index)}>
                     Add Work Done
                   </Button>
                 </div>
