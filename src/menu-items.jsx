@@ -12,7 +12,7 @@ const menuItems = {
           type: 'item',
           icon: 'feather icon-home',
           classes: 'nav-item disabled',
-          url: '/app/dashboard/default'
+          // url: '/app/dashboard/default'
         }
       ]
     },
